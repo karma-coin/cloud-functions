@@ -1,6 +1,5 @@
 import {onRequest} from "firebase-functions/v2/https";
 import * as logger from "firebase-functions/logger";
-// import {initializeApp} from "firebase-admin/app";
 import admin = require("firebase-admin");
 import {getFirestore} from "firebase-admin/firestore";
 
@@ -8,7 +7,7 @@ import {getFirestore} from "firebase-admin/firestore";
 admin.initializeApp();
 
 const db = getFirestore();
-// Send pusn note to Karma Coin Transaction receiver account
+// Send push note to Karma Coin Transaction receiver account
 export const processPaymentTransaction =
     onRequest(async (request, response) => {
       const toId = request.query.toId?.toString();
@@ -23,6 +22,7 @@ export const processPaymentTransaction =
       }
 
       const charTraitId = request.query.charTrait?.toString() || "";
+      const emoji = request.query.emoji?.toString() || "🎉";
       const transactionId = request.query.transactionId?.toString();
 
       if (transactionId === null) {
@@ -64,16 +64,17 @@ export const processPaymentTransaction =
       } else {
         logger.log("pushTokens found: " + pushTokens.length);
 
-        sendPushNotes(pushTokens, amount!, charTraitId, transactionId!);
+        sendPushNotes(pushTokens, amount!, charTraitId, transactionId!, emoji);
       }
     });
 
 // eslint-disable-next-line max-len,require-jsdoc
-function sendPushNotes(tokens:Array<string>, amount:string, charTrait: string, transactionId: string) {
+function sendPushNotes(tokens:Array<string>, amount:string, charTrait: string, transactionId: string, emoji: string) {
   logger.log("Sending push note to tokens: " + tokens);
 
   // eslint-disable-next-line max-len
-  const message = charTrait === "" ? "You have received " + amount + "." : "You have received an appreciation and " + amount + ".";
+  const message = charTrait === "" ? "You have received " + amount + " " + emoji + "." :
+    "You have received an appreciation " + emoji + " and " + amount + ".";
 
   const payload = {
     tokens: tokens,
