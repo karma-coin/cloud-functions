@@ -9,7 +9,7 @@ import {getFirestore} from "firebase-admin/firestore";
 admin.initializeApp();
 
 const db = getFirestore();
-// Send push note to Karma Coin Transaction receiver account
+// Send push note to Karma Coin Transaction receiver's devices
 export const processPaymentTransaction =
     onRequest(async (request, response) => {
       const toId : string = request.body.toId || "";
@@ -96,7 +96,7 @@ function sendPushNotes({tokens, amount, charTrait, transactionId, emoji}: {
   const payload = {
     tokens: tokens,
     notification: {
-      title: "cloud function demo",
+      title: "You got Karma Coin",
       body: message,
     },
     data: {
